@@ -7,6 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import vip.rinck.imlc.common.R;
+
 public abstract class Activity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState){
@@ -14,7 +17,9 @@ public abstract class Activity extends AppCompatActivity{
         //在界面未初始化之前调用的初始化窗口
         initWindows();
         if(initArgs(getIntent().getExtras())){
-            getContentLayoutId();
+            //得到界面ID并设置到Activity界面中
+            int layId = getContentLayoutId();
+            setContentView(layId);
             initWidget();
             initData();
         }else{
@@ -40,6 +45,8 @@ public abstract class Activity extends AppCompatActivity{
     //初始化控件
     protected void initWidget(){
 
+
+        ButterKnife.bind(this);
     }
 
     //初始化数据

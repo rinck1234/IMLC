@@ -36,5 +36,5 @@ ext{
 
     //项目依赖库版本号
     supportVersion = '28.0.0-rc02'
-    butterknifeVersion = '8.4.1'
+    butterknifeVersion = '8.5.1'
 }
