@@ -28,16 +28,16 @@ public abstract class Fragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        if(mRoot==null) {
+        if (mRoot == null) {
             int layId = getContentLayoutId();
             //初始化当前的根布局，但是不在创建时就添加到container里面
             View root = inflater.inflate(layId, container, false);
             initWidget(root);
-            return super.onCreateView(inflater, container, savedInstanceState);
-        }else{
-            if(mRoot.getParent()!=null){
+            mRoot = root;
+        } else {
+            if (mRoot.getParent() != null) {
                 //把当前Root从其父控件中移除
-                ( (ViewGroup)mRoot.getParent()).removeView(mRoot);
+                ((ViewGroup) mRoot.getParent()).removeView(mRoot);
             }
         }
 
@@ -47,7 +47,7 @@ public abstract class Fragment extends android.support.v4.app.Fragment {
     }
 
     //初始化相关参数
-    protected void initArgs(Bundle bundle){
+    protected void initArgs(Bundle bundle) {
     }
 
     @Override
@@ -59,13 +59,13 @@ public abstract class Fragment extends android.support.v4.app.Fragment {
 
     protected abstract int getContentLayoutId();
 
-    protected void initWidget(View root){
+    protected void initWidget(View root) {
 
         mRootUnbinder = ButterKnife.bind(this, root);
     }
 
     //初始化数据
-    protected void initData(){
+    protected void initData() {
 
     }
 
@@ -74,7 +74,7 @@ public abstract class Fragment extends android.support.v4.app.Fragment {
      * 返回True代表我已处理逻辑，Activity不用自己finish
      * 返回false代表我未处理逻辑，Activity走自己的逻辑
      */
-    public boolean onBackPressed(){
+    public boolean onBackPressed() {
         return false;
     }
 }

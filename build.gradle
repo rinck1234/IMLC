@@ -37,4 +37,8 @@ ext{
     //项目依赖库版本号
     supportVersion = '28.0.0-rc02'
     butterknifeVersion = '8.5.1'
+    imlcVersion = '2.0.0'
+    circleimageviewVersion = '2.1.0'
+    glideVersion = '3.7.0'
+
 }
