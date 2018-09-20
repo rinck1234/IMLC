@@ -1,5 +1,6 @@
 package vip.rinck.imlc;
 
+import android.Manifest;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -22,12 +23,14 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import vip.rinck.imlc.activities.AccountActivity;
 import vip.rinck.imlc.common.app.Activity;
 import vip.rinck.imlc.common.widget.PortraitView;
 import vip.rinck.imlc.fragments.main.ActiveFragment;
 import vip.rinck.imlc.fragments.main.ContactFragment;
 import vip.rinck.imlc.fragments.main.GroupFragment;
 import vip.rinck.imlc.helper.NavHelper;
+import vip.rinck.imlc.helper.PermissionHelper;
 
 
 public class MainActivity extends Activity implements BottomNavigationView.OnNavigationItemSelectedListener,
@@ -86,6 +89,9 @@ public class MainActivity extends Activity implements BottomNavigationView.OnNav
     protected void initData() {
         super.initData();
 
+        String[] allpermissions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        PermissionHelper.applypermission(this,this.getApplicationContext(),allpermissions);
+
         Menu menu = mNavigation.getMenu();
         menu.performIdentifierAction(R.id.action_home, 0);
     }
@@ -97,7 +103,7 @@ public class MainActivity extends Activity implements BottomNavigationView.OnNav
 
     @OnClick(R.id.btn_action)
     void onActionClick() {
-
+        AccountActivity.show(this);
     }
 
     /**
