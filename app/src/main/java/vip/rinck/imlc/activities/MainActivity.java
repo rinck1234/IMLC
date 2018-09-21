@@ -1,6 +1,8 @@
-package vip.rinck.imlc;
+package vip.rinck.imlc.activities;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -23,9 +25,11 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import vip.rinck.imlc.R;
 import vip.rinck.imlc.activities.AccountActivity;
 import vip.rinck.imlc.common.app.Activity;
 import vip.rinck.imlc.common.widget.PortraitView;
+import vip.rinck.imlc.fragments.assist.PermissionsFragment;
 import vip.rinck.imlc.fragments.main.ActiveFragment;
 import vip.rinck.imlc.fragments.main.ContactFragment;
 import vip.rinck.imlc.fragments.main.GroupFragment;
@@ -56,6 +60,10 @@ public class MainActivity extends Activity implements BottomNavigationView.OnNav
 
     private NavHelper<Integer> mNavHelper;
 
+    public static void show(Context context){
+        context.startActivity(new Intent(context,MainActivity.class));
+    }
+
     @Override
     protected int getContentLayoutId() {
         return R.layout.activity_main;
@@ -83,14 +91,13 @@ public class MainActivity extends Activity implements BottomNavigationView.OnNav
                         this.view.setBackground(resource.getCurrent());
                     }
                 });
+
     }
 
     @Override
     protected void initData() {
         super.initData();
 
-        String[] allpermissions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        PermissionHelper.applypermission(this,this.getApplicationContext(),allpermissions);
 
         Menu menu = mNavigation.getMenu();
         menu.performIdentifierAction(R.id.action_home, 0);
@@ -141,16 +148,16 @@ public class MainActivity extends Activity implements BottomNavigationView.OnNav
         else if (Objects.equals(newTab.extra, R.string.title_group)) {
             //群
             mAction.setImageResource(R.drawable.ic_group_add);
-            rotation = -360;
+            rotation = -180;
         } else {
             mAction.setImageResource(R.drawable.ic_contact_add);
-            rotation = 360;
+            rotation = 180;
         }
 
         //开始动画
         //旋转，Y轴位移，弹性差值器，时间
         mAction.animate()
-                .rotation(rotation)
+                .rotationY(rotation)
                 .translationY(transY)
                 .setInterpolator(new AnticipateInterpolator(1))
                 .setDuration(360)

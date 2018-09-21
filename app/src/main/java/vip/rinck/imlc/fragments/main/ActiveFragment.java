@@ -9,8 +9,6 @@ import vip.rinck.imlc.common.widget.GalleryView;
 
 public class ActiveFragment extends Fragment {
 
-    @BindView(R.id.galleryView)
-    GalleryView mGalley;
 
     public ActiveFragment() {
         // Required empty public constructor
@@ -25,11 +23,5 @@ public class ActiveFragment extends Fragment {
     protected void initData() {
         super.initData();
 
-        mGalley.setup(getLoaderManager(), new GalleryView.SelectedChangeListener() {
-            @Override
-            public void onSelectedCountChanged(int count) {
-
-            }
-        });
     }
 }

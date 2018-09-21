@@ -53,8 +53,9 @@ public class UpdateInfoFragment extends Fragment {
                         options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
                         //设置压缩后的图片精度
                         options.setCompressionQuality(96);
-
+                        //得到头像的缓存地址
                         File dPath = Application.getPortraitTmpFile();
+                        //发起剪切
                         UCrop.of(Uri.fromFile(new File(path)),Uri.fromFile(dPath))
                                 .withAspectRatio(1,1)
                                 .withMaxResultSize(520,520)//返回最大尺寸
@@ -67,9 +68,13 @@ public class UpdateInfoFragment extends Fragment {
                 .show(getChildFragmentManager(),GalleryFragment.class.getName());
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //收到从Activity传递过来的回调，取出其中的值进行图片加载
+        //如果是我能够处理的类型
         if (requestCode == UCrop.REQUEST_CROP) {
+            //通过UCrop得到对应的Uri
             final Uri resultUri = UCrop.getOutput(data);
 
             if (resultUri != null) {
@@ -80,6 +85,10 @@ public class UpdateInfoFragment extends Fragment {
         }
     }
 
+    /**
+     * 加载Uri到当前
+     * @param uri
+     */
     private void loadPortrait(Uri uri){
         Glide.with(this)
                 .load(uri)
