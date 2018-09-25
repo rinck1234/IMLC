@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import vip.rinck.imlc.R;
 import vip.rinck.imlc.common.app.Application;
 import vip.rinck.imlc.common.app.Fragment;
 import vip.rinck.imlc.common.widget.PortraitView;
+import vip.rinck.imlc.factory.Factory;
+import vip.rinck.imlc.factory.net.UploadHelper;
 import vip.rinck.imlc.fragments.media.GalleryFragment;
 
 
@@ -95,6 +98,17 @@ public class UpdateInfoFragment extends Fragment {
                 .asBitmap()
                 .centerCrop()
                 .into(mPortrait);
+
+        //拿到本地地址
+        final String localPath = uri.getPath();
+        Log.e("LocalPath","LocalPath:"+localPath);
+        Factory.runOnAsync(new Runnable() {
+            @Override
+            public void run() {
+                String url = UploadHelper.uploadPortrait(localPath);
+                Log.e("TAG","PublicUrl:"+url);
+            }
+        });
     }
 
 
