@@ -1,4 +1,4 @@
-package vip.rinck.imlc.fragments.account;
+package vip.rinck.imlc.fragments.user;
 
 
 import android.content.Intent;

@@ -5,7 +5,7 @@
     <color name="colorAccent">#1572fc</color>
     <color name="colorLight">#FFF</color>
     <color name="colorDark">#000</color>
-    <color name="colorAccentAloha">#801572fc</color>
+    <color name="colorAccentAlpha">#801572fc</color>
 <!-- 背景色 -->
     <color name="windowsBackground">#f7f7f7</color>
     <color name="windowsBackgroundLight">#f8f8f8</color>

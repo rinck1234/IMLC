@@ -1,0 +1,32 @@
+package vip.rinck.imlc.factory.presenter;
+
+import android.support.annotation.StringRes;
+
+/**
+ * MVP模式中公共的基本契约
+ */
+public interface BaseContract {
+
+
+    interface View<T extends Presenter> {
+
+        void showError(@StringRes int str);
+
+        //显示进度条
+        void showLoading();
+
+        //支持设置一个Presenter
+        void setPresenter(T presenter);
+    }
+
+    interface Presenter {
+
+        //共用的开始
+        void start();
+
+        //共用的销毁
+        void destory();
+    }
+
+
+}

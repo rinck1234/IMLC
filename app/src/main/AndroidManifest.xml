@@ -16,7 +16,19 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.TransStatusBar">
+        <!-- 个推的广播注册 -->
+        <receiver
+            android:name=".MessageReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="1000">
+            <intent-filter>
+                <action android:name="com.igexin.sdk.action.${GETUI_APP_ID}" />
+
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".LaunchActivity"
             android:label="@string/app_name">
@@ -29,8 +41,7 @@
         <activity
             android:name=".activities.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Main">
-        </activity>
+            android:theme="@style/AppTheme.Main" />
         <activity
             android:name=".activities.AccountActivity"
             android:screenOrientation="portrait"
@@ -39,8 +50,7 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-
-
+        <activity android:name=".activities.UserActivity" />
     </application>
 
 </manifest>
