@@ -3,6 +3,7 @@ package vip.rinck.imlc.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -29,6 +30,7 @@ import vip.rinck.imlc.R;
 import vip.rinck.imlc.activities.AccountActivity;
 import vip.rinck.imlc.common.app.Activity;
 import vip.rinck.imlc.common.widget.PortraitView;
+import vip.rinck.imlc.factory.persistence.Account;
 import vip.rinck.imlc.fragments.assist.PermissionsFragment;
 import vip.rinck.imlc.fragments.main.ActiveFragment;
 import vip.rinck.imlc.fragments.main.ContactFragment;
@@ -62,6 +64,16 @@ public class MainActivity extends Activity implements BottomNavigationView.OnNav
 
     public static void show(Context context){
         context.startActivity(new Intent(context,MainActivity.class));
+    }
+
+    @Override
+    protected boolean initArgs(Bundle bundle) {
+        if(Account.isComplete()){
+            return super.initArgs(bundle);
+        }else {
+            UserActivity.show(this);
+            return false;
+        }
     }
 
     @Override

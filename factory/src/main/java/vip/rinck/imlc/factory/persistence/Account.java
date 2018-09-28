@@ -3,6 +3,7 @@ package vip.rinck.imlc.factory.persistence;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
@@ -91,7 +92,16 @@ public class Account {
      * @return
      */
     public static boolean isComplete(){
-        return isLogin();
+        //首先保证登录成功
+        if(isLogin()){
+            User self = getUser();
+            Log.e("TAG",self.toString());
+            return !TextUtils.isEmpty(self.getDesc())
+                    &&!TextUtils.isEmpty(self.getPortrait())
+                    &&self.getSex()!=0;
+        }
+        //未登录返回信息不完全
+        return false;
     }
 
     /**

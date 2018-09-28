@@ -3,36 +3,63 @@ package vip.rinck.imlc.fragments.user;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.yalantis.ucrop.UCrop;
+
+import net.qiujuer.genius.ui.widget.Button;
+import net.qiujuer.genius.ui.widget.Loading;
 
 import java.io.File;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import vip.rinck.imlc.R;
+import vip.rinck.imlc.activities.MainActivity;
 import vip.rinck.imlc.common.app.Application;
 import vip.rinck.imlc.common.app.Fragment;
+import vip.rinck.imlc.common.app.PresenterFragment;
 import vip.rinck.imlc.common.widget.PortraitView;
 import vip.rinck.imlc.factory.Factory;
+import vip.rinck.imlc.factory.model.db.User;
 import vip.rinck.imlc.factory.net.UploadHelper;
+import vip.rinck.imlc.factory.presenter.BaseContract;
+import vip.rinck.imlc.factory.presenter.user.UpdateInfoContract;
+import vip.rinck.imlc.factory.presenter.user.UpdateInfoPresenter;
 import vip.rinck.imlc.fragments.media.GalleryFragment;
 
+import static vip.rinck.imlc.factory.persistence.Account.getUser;
 
 
 /**
  * 用户更新信息界面
  */
-public class UpdateInfoFragment extends Fragment {
+public class UpdateInfoFragment extends PresenterFragment<UpdateInfoContract.Presenter> implements UpdateInfoContract.View{
+    @BindView(R.id.iv_sex)
+    ImageView mSex;
+    @BindView(R.id.et_desc)
+    EditText mDesc;
+
     @BindView(R.id.iv_portrait)
     PortraitView mPortrait;
+
+    @BindView(R.id.loading)
+    Loading mLoading;
+
+    @BindView(R.id.btn_submit)
+    Button mSubmit;
+
+    private String mPortraitPath;
+    private boolean isMan;
 
 
     public UpdateInfoFragment() {
@@ -84,6 +111,7 @@ public class UpdateInfoFragment extends Fragment {
                 loadPortrait(resultUri);
             }
         }else if (resultCode == UCrop.RESULT_ERROR) {
+            Application.showToast(R.string.data_rsp_error_unknown);
             final Throwable cropError = UCrop.getError(data);
         }
     }
@@ -93,24 +121,65 @@ public class UpdateInfoFragment extends Fragment {
      * @param uri
      */
     private void loadPortrait(Uri uri){
+        //得到头像地址
+        mPortraitPath = uri.getPath();
+
         Glide.with(this)
                 .load(uri)
                 .asBitmap()
                 .centerCrop()
                 .into(mPortrait);
 
-        //拿到本地地址
-        final String localPath = uri.getPath();
-        Log.e("LocalPath","LocalPath:"+localPath);
-        Factory.runOnAsync(new Runnable() {
-            @Override
-            public void run() {
-                String url = UploadHelper.uploadPortrait(localPath);
-                Log.e("TAG","PublicUrl:"+url);
-            }
-        });
+
     }
 
+    @OnClick(R.id.iv_sex)
+    void onSexClick(){
+        //性别图片点击触发
+        isMan = !isMan;
+        Drawable drawable = getResources().getDrawable(isMan?
+        R.drawable.ic_sex_man:R.drawable.ic_sex_woman);
+        mSex.setImageDrawable(drawable);
+        mSex.getBackground().setLevel(isMan?0:1);
+    }
+
+    @OnClick(R.id.btn_submit)
+    void onSubmitClick(){
+        String desc = mDesc.getText().toString();
+        mPresenter.update(mPortraitPath,desc,isMan);
+
+    }
+
+    @Override
+    public void showError(int str) {
+        super.showError(str);
+        mLoading.stop();
+        mPortrait.setEnabled(true);
+        mDesc.setEnabled(true);
+        mSex.setEnabled(true);
+        mSubmit.setEnabled(true);
+    }
+
+    @Override
+    public void showLoading() {
+        super.showLoading();
+        mLoading.start();
+        mPortrait.setEnabled(false);
+        mDesc.setEnabled(false);
+        mSex.setEnabled(false);
+        mSubmit.setEnabled(false);
+    }
+
+    @Override
+    protected UpdateInfoContract.Presenter initPresenter() {
+        return new UpdateInfoPresenter(this);
+    }
+
+    @Override
+    public void updateSucceed() {
+        MainActivity.show(getContext());
+        getActivity().finish();
+    }
 
 
 }
