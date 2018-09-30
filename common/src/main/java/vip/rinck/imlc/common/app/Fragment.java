@@ -10,11 +10,15 @@ import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import vip.rinck.imlc.common.widget.convention.PlaceHolderView;
 
 public abstract class Fragment extends android.support.v4.app.Fragment {
 
     protected View mRoot;
     protected Unbinder mRootUnbinder;
+    protected PlaceHolderView mPlaceholderView;
+    //标示第一次初始化数据
+    protected boolean mIsFirstInitData = true;
 
     @Override
     public void onAttach(Context context) {
@@ -53,6 +57,11 @@ public abstract class Fragment extends android.support.v4.app.Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if(mIsFirstInitData){
+            //触发一次
+            mIsFirstInitData = false;
+            onFirstInit();
+        }
         //当view创建完成后初始化数据
         initData();
     }
@@ -69,6 +78,11 @@ public abstract class Fragment extends android.support.v4.app.Fragment {
 
     }
 
+    //首次初始化数据调用
+    protected void onFirstInit(){
+
+    }
+
     /**
      * 返回按键触发时调用
      * 返回True代表我已处理逻辑，Activity不用自己finish
@@ -76,5 +90,14 @@ public abstract class Fragment extends android.support.v4.app.Fragment {
      */
     public boolean onBackPressed() {
         return false;
+    }
+
+    /**
+     * 设置占位布局
+     * @param placeholderView 继承
+     */
+    public void setPlaceholderView(PlaceHolderView placeholderView){
+        this.mPlaceholderView = placeholderView;
+
     }
 }

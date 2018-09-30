@@ -1,7 +1,10 @@
 package vip.rinck.imlc.factory.net;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -43,4 +46,20 @@ public interface RemoteService {
     //用户更新的接口
     @PUT("user")
     Call<RspModel<UserCard>> userUpdate(@Body UserUpdateModel model);
+
+    //用户搜索的接口
+    @GET("user/search/{username}")
+    Call<RspModel<List<UserCard>>> userSearch(@Path("username") String username);
+
+    //用户关注接口
+    @PUT("user/follow/{followId}")
+    Call<RspModel<UserCard>> userFollow(@Path("followId") String followId);
+
+    //获取联系人列表
+    @GET("user/contact")
+    Call<RspModel<List<UserCard>>> userContacts();
+
+    //获取用户
+    @GET("user/{userId}")
+    Call<RspModel<UserCard>> userFind(@Path("userId") String userId);
 }

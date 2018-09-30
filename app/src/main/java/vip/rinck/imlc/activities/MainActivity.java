@@ -113,16 +113,32 @@ public class MainActivity extends Activity implements BottomNavigationView.OnNav
 
         Menu menu = mNavigation.getMenu();
         menu.performIdentifierAction(R.id.action_home, 0);
+
+        //初始化头像加载
+        mPortrait.setup(Glide.with(this),Account.getUser());
+    }
+    @OnClick(R.id.iv_portrait)
+    void onPortraitClick(){
+        PersonalActivity.show(this,Account.getUserId());
     }
 
     @OnClick(R.id.iv_search)
     void onSearchMenuClick() {
+        //在群界面时，点击顶部搜索 则进入群搜索
+        int type = Objects.equals(mNavHelper.getCurrentTab().extra,R.string.title_group)?
+                SearchActivity.TYPE_GROUP:SearchActivity.TYPE_USER;
+        SearchActivity.show(this,type);
 
     }
 
     @OnClick(R.id.btn_action)
     void onActionClick() {
-        AccountActivity.show(this);
+        //浮动按钮点击 判断当前界面是群还是联系人
+        //如果是群，则打开群创建的界面
+        if(Objects.equals(mNavHelper.getCurrentTab().extra,R.string.title_group)){
+            //TODO 打开群创建界面
+        }else {
+        }
     }
 
     /**

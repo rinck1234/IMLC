@@ -6,9 +6,13 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.Date;
+import java.util.Objects;
+
+import vip.rinck.imlc.factory.model.Author;
+import vip.rinck.imlc.factory.utils.DiffUiDataCallback;
 
 @Table(database = AppDatabase.class)
-public class User extends BaseModel {
+public class User extends BaseModel implements Author,DiffUiDataCallback.UiDataDiffer<User> {
     public static final int SEX_MAN = 1;
     public static final int SEX_WOMAN = 2;
 
@@ -130,19 +134,36 @@ public class User extends BaseModel {
     }
 
     @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", phone='" + phone + '\'' +
-                ", portrait='" + portrait + '\'' +
-                ", desc='" + desc + '\'' +
-                ", sex=" + sex +
-                ", alias='" + alias + '\'' +
-                ", follows=" + follows +
-                ", following=" + following +
-                ", isFollow=" + isFollow +
-                ", modifyAt=" + modifyAt +
-                '}';
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (phone != null ? phone.hashCode() : 0);
+        result = 31 * result + (portrait != null ? portrait.hashCode() : 0);
+        result = 31 * result + (desc != null ? desc.hashCode() : 0);
+        result = 31 * result + sex;
+        result = 31 * result + (alias != null ? alias.hashCode() : 0);
+        result = 31 * result + follows;
+        result = 31 * result + following;
+        result = 31 * result + (isFollow ? 1 : 0);
+        result = 31 * result + (modifyAt != null ? modifyAt.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public boolean isSame(User old) {
+
+        return this == old||Objects.equals(id ,old.getId());
+
+    }
+
+    @Override
+    public boolean isUiContentSame(User old) {
+        //主要判断用户名，头像，性别，关注
+        return this == old || (
+                Objects.equals(username,old.username)
+                && Objects.equals(portrait,old.portrait)
+                && Objects.equals(sex,old.sex)
+                && Objects.equals(isFollow,old.isFollow)
+                );
     }
 }

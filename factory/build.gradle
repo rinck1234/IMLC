@@ -6,7 +6,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -28,17 +28,17 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
-    implementation "net.qiujuer.genius:kit-handler:$rootProject.ext.geniusVersion"
+   /* implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
+    implementation "net.qiujuer.genius:kit-handler:$rootProject.ext.geniusVersion"*/
 
 
 
     implementation project(':common')
-    implementation "com.aliyun.dpa:oss-android-sdk:$rootProject.ext.ossVersion"
+    api "com.aliyun.dpa:oss-android-sdk:$rootProject.ext.ossVersion"
 
-    implementation "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofitVersion"
-    implementation "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
+    api "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofitVersion"
+    api "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofitVersion"
+    api "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -47,7 +47,7 @@ dependencies {
     })
 
     annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${rootProject.ext.dbflowVersion}"
-    implementation "com.github.Raizlabs.DBFlow:dbflow-core:${rootProject.ext.dbflowVersion}"
-    implementation "com.github.Raizlabs.DBFlow:dbflow:${rootProject.ext.dbflowVersion}"
+    api "com.github.Raizlabs.DBFlow:dbflow-core:${rootProject.ext.dbflowVersion}"
+    api "com.github.Raizlabs.DBFlow:dbflow:${rootProject.ext.dbflowVersion}"
 
 }

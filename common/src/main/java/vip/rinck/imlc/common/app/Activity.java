@@ -9,8 +9,12 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import vip.rinck.imlc.common.R;
+import vip.rinck.imlc.common.widget.convention.PlaceHolderView;
 
 public abstract class Activity extends AppCompatActivity{
+
+    protected PlaceHolderView mPlaceholderView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -20,13 +24,18 @@ public abstract class Activity extends AppCompatActivity{
             //得到界面ID并设置到Activity界面中
             int layId = getContentLayoutId();
             setContentView(layId);
+            initBefore();
             initWidget();
             initData();
         }else{
             finish();
         }
+    }
 
-
+    /**
+     * 初始化控件调用之前
+     */
+    protected void initBefore(){
 
     }
 
@@ -82,5 +91,13 @@ public abstract class Activity extends AppCompatActivity{
 
         super.onBackPressed();
         finish();
+    }
+    /**
+     * 设置占位布局
+     * @param placeholderView 继承
+     */
+    public void setPlaceholderView(PlaceHolderView placeholderView){
+        this.mPlaceholderView = placeholderView;
+
     }
 }

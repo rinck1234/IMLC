@@ -2,9 +2,10 @@ package vip.rinck.imlc.factory.model.card;
 
 import java.util.Date;
 
+import vip.rinck.imlc.factory.model.Author;
 import vip.rinck.imlc.factory.model.db.User;
 
-public class UserCard {
+public class UserCard implements Author {
     private String id;
     private String username;
     private String phone;
