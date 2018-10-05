@@ -1,18 +1,33 @@
 package vip.rinck.imlc.factory;
 
 import android.support.annotation.StringRes;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import vip.rinck.imlc.common.app.Application;
 import vip.rinck.imlc.factory.data.DataSource;
+import vip.rinck.imlc.factory.data.group.GroupCenter;
+import vip.rinck.imlc.factory.data.group.GroupDispatcher;
+import vip.rinck.imlc.factory.data.message.MessageCenter;
+import vip.rinck.imlc.factory.data.message.MessageDispatcher;
+import vip.rinck.imlc.factory.data.user.UserCenter;
+import vip.rinck.imlc.factory.data.user.UserDispatcher;
+import vip.rinck.imlc.factory.model.api.PushModel;
 import vip.rinck.imlc.factory.model.api.RspModel;
+import vip.rinck.imlc.factory.model.card.GroupCard;
+import vip.rinck.imlc.factory.model.card.GroupMemberCard;
+import vip.rinck.imlc.factory.model.card.MessageCard;
+import vip.rinck.imlc.factory.model.card.UserCard;
 import vip.rinck.imlc.factory.persistence.Account;
 import vip.rinck.imlc.factory.utils.DBFlowExclusionStrategy;
 
@@ -150,9 +165,79 @@ public class Factory {
 
     /**
      * 处理推送来的消息
-     * @param message
+     * @param str
      */
-    public static void dispatchPush(String message){
-
+    public static void dispatchPush(String str){
+        if(!Account.isLogin())
+            return;
+        PushModel model = PushModel.decode(str);
+        if(model==null)
+            return;
+        Log.e("TAG",model.toString());
+        //对推送集合进行遍历
+        for (PushModel.Entity entity : model.getEntities()) {
+            switch (entity.type){
+                case PushModel.ENTITY_TYPE_LOGOUT:
+                    instance.logout();
+                    //退出情况下直接返回，并且不可继续
+                    return;
+                case PushModel.ENTITY_TYPE_MESSAGE: {
+                    //普通消息
+                    MessageCard card = getGson().fromJson(entity.content, MessageCard.class);
+                    getMessageCenter().dispatch(card);
+                    break;
+                }
+                case PushModel.ENTITY_TYPE_ADD_FRIEND: {
+                    //好友添加
+                    UserCard card = getGson().fromJson(entity.content, UserCard.class);
+                    getUserCenter().dispatch(card);
+                    break;
+                }
+                case PushModel.ENTITY_TYPE_ADD_GROUP:{
+                    //添加群
+                    GroupCard card = getGson().fromJson(entity.content, GroupCard.class);
+                    getGroupCenter().dispatch(card);
+                    break;
+                }
+                case PushModel.ENTITY_TYPE_ADD_GROUP_MEMBERS:
+                    case PushModel.ENTITY_TYPE_MODIFY_GROUP_MEMBERS:{
+                    //群成员变更，返回群成员列表
+                        Type type = new TypeToken<List<GroupMemberCard>>(){
+                        }.getType();
+                    List<GroupMemberCard> card = getGson().fromJson(entity.content, type);
+                    getGroupCenter().dispatch(card.toArray(new GroupMemberCard[0]));
+                    break;
+                }
+                case PushModel.ENTITY_TYPE_EXIT_GROUP_MEMBERS:{
+                    //TODO 成员退出的推送
+                }
+            }
+        }
     }
+
+    /**
+     * 获取一个用户中心的实现类
+     * @return 用户中心的规范接口
+     */
+    public static UserCenter getUserCenter(){
+        return UserDispatcher.getInstance();
+    }
+
+    /**
+     * 获取一个消息中心的实现类
+     * @return 消息中心的规范接口
+     */
+    public static MessageCenter getMessageCenter(){
+        return MessageDispatcher.getInstance();
+    }
+
+    /**
+     * 获取一个群处理中心的实现类
+     * @return 群中心的规范接口
+     */
+    public static GroupCenter getGroupCenter(){
+        return GroupDispatcher.getInstance();
+    }
+
+
 }
