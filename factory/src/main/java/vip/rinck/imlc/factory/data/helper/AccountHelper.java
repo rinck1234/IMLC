@@ -45,7 +45,7 @@ public class AccountHelper {
      * @param model 登录的model
      * @param callback 成功与失败的回调
      */
-    public static void login(LoginModel model, final DataSource.Callback<User> callback) {
+    public static void login(final LoginModel model, final DataSource.Callback<User> callback) {
         //调用Retrofit对网络请求接口作代理
         RemoteService service = Network.remote();
 

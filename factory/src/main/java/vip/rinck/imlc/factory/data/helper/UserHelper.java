@@ -18,8 +18,10 @@ import vip.rinck.imlc.factory.model.api.user.UserUpdateModel;
 import vip.rinck.imlc.factory.model.card.UserCard;
 import vip.rinck.imlc.factory.model.db.User;
 import vip.rinck.imlc.factory.model.db.User_Table;
+import vip.rinck.imlc.factory.model.db.view.UserSampleModel;
 import vip.rinck.imlc.factory.net.Network;
 import vip.rinck.imlc.factory.net.RemoteService;
+import vip.rinck.imlc.factory.persistence.Account;
 import vip.rinck.imlc.utils.CollectionUtil;
 
 public class UserHelper {
@@ -103,7 +105,7 @@ public class UserHelper {
                     //保存并通知联系人列表刷新
                     DbHelper.save(User.class,user);*/
                     //返回数据
-                    callback.onDataLoaded(rspModel.getResult());
+                    callback.onDataLoaded(userCard);
                 }else{
                     Factory.decodeRspCode(rspModel,callback);
                 }
@@ -198,6 +200,37 @@ public class UserHelper {
             return findFromLocal(id);
         }
         return user;
+    }
+
+    /**
+     * 获取联系人
+     */
+    public static List<User> getContact(){
+        return SQLite.select()
+                .from(User.class)
+                .where(User_Table.isFollow.eq(true))
+                .and(User_Table.id.notEq(Account.getUserId()))
+                .orderBy(User_Table.username,true)
+                .limit(100)
+                .queryList();
+
+    }
+
+    /**
+     * 获取一个联系人列表
+     * 简单数据类型
+     * @return
+     */
+    public static List<UserSampleModel> getSampleContact(){
+        return SQLite.select(User_Table.id.withTable().as("id"),
+                User_Table.username.withTable().as("username"),
+                User_Table.portrait.withTable().as("portrait"))
+                .from(User.class)
+                .where(User_Table.isFollow.eq(true))
+                .and(User_Table.id.notEq(Account.getUserId()))
+                .orderBy(User_Table.username,true)
+                .queryCustomList(UserSampleModel.class);
+
     }
 
 }

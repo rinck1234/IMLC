@@ -10,6 +10,8 @@ import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
 import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
 
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -115,7 +117,7 @@ public class DbHelper {
                 //执行
                 ModelAdapter<Model> adapter = FlowManager.getModelAdapter(tClass);
                 //删除
-                adapter.deleteAll(CollectionUtil.toArrayList(models));
+                adapter.deleteAll(Arrays.asList(models));
                 //唤起通知
                 instance.notifyDelete(tClass,models);
             }
@@ -142,7 +144,7 @@ public class DbHelper {
                 //执行
                 ModelAdapter<Model> adapter = FlowManager.getModelAdapter(tClass);
                 //保存
-                adapter.saveAll(CollectionUtil.toArrayList(models));
+                adapter.saveAll(Arrays.asList(models));
                 //唤起通知
                 instance.notifySave(tClass,models);
             }
@@ -191,7 +193,7 @@ public class DbHelper {
         if(listeners!=null&&listeners.size()>0){
             //通用的通知
             for (ChangedListener<Model> listener : listeners) {
-                listener.onDataSave(models);
+                listener.onDataDelete(models);
             }
         }
         //例外情况

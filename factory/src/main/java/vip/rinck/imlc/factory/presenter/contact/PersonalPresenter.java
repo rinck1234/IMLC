@@ -36,14 +36,18 @@ implements PersonalContract.Prsenter{
 
                     String id =view.getUserId();
                     User user = UserHelper.searchFirstOfNet(id);
-                    onLoaded(view,user);
+                    onLoaded(user);
                 }
             }
         });
 
     }
 
-    private void  onLoaded(final PersonalContract.View view,final User user){
+    /**
+     * 进行界面的设置
+     * @param user
+     */
+    private void  onLoaded(final User user){
         this.user = user;
         //是否是自己
         final boolean isSelf = user.getId().equalsIgnoreCase(Account.getUserId());
@@ -53,6 +57,9 @@ implements PersonalContract.Prsenter{
         Run.onUiAsync(new Action() {
             @Override
             public void call() {
+                final PersonalContract.View view = getView();
+                if(view==null)
+                    return;
                 view.onLoadDone(user);
                 view.setFollowStatus(isFollow);
                 view.allowSayHello(allowSayHello);

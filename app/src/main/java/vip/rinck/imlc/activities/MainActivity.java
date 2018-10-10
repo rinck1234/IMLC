@@ -136,8 +136,11 @@ public class MainActivity extends Activity implements BottomNavigationView.OnNav
         //浮动按钮点击 判断当前界面是群还是联系人
         //如果是群，则打开群创建的界面
         if(Objects.equals(mNavHelper.getCurrentTab().extra,R.string.title_group)){
-            //TODO 打开群创建界面
+            //打开群创建界面
+            GroupCreateActivity.show(this);
         }else {
+            //打开添加用户界面
+            SearchActivity.show(this,SearchActivity.TYPE_USER);
         }
     }
 

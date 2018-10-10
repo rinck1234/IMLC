@@ -82,7 +82,7 @@ public class GroupDispatcher implements GroupCenter {
         public void run() {
             List<Group> groups = new ArrayList<>();
             for(GroupCard card:cards){
-                User owner = UserHelper.search(card.getId());
+                User owner = UserHelper.search(card.getOwnerId());
                 if(owner!=null){
                     Group group = card.build(owner);
                     groups.add(group);

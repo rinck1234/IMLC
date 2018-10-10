@@ -12,7 +12,13 @@ import vip.rinck.imlc.factory.model.api.RspModel;
 import vip.rinck.imlc.factory.model.api.account.AccountRspModel;
 import vip.rinck.imlc.factory.model.api.account.LoginModel;
 import vip.rinck.imlc.factory.model.api.account.RegisterModel;
+import vip.rinck.imlc.factory.model.api.group.GroupCreateModel;
+import vip.rinck.imlc.factory.model.api.group.GroupMemberAddModel;
+import vip.rinck.imlc.factory.model.api.message.MsgCreateModel;
 import vip.rinck.imlc.factory.model.api.user.UserUpdateModel;
+import vip.rinck.imlc.factory.model.card.GroupCard;
+import vip.rinck.imlc.factory.model.card.GroupMemberCard;
+import vip.rinck.imlc.factory.model.card.MessageCard;
 import vip.rinck.imlc.factory.model.card.UserCard;
 
 /**
@@ -59,7 +65,35 @@ public interface RemoteService {
     @GET("user/contact")
     Call<RspModel<List<UserCard>>> userContacts();
 
-    //获取用户
+    //获取用户信息
     @GET("user/{userId}")
     Call<RspModel<UserCard>> userFind(@Path("userId") String userId);
+
+    //发送消息的接口
+    @POST("msg")
+    Call<RspModel<MessageCard>> msgPush(@Body MsgCreateModel model);
+
+    //创建群
+    @POST("group")
+    Call<RspModel<GroupCard>> groupCreate(@Body GroupCreateModel model);
+
+    @GET("group/{groupId}")
+    Call<RspModel<GroupCard>> groupFind(@Path("groupId") String groupId);
+
+    //群搜索的接口
+    @GET("group/search/{name}")
+    Call<RspModel<List<GroupCard>>> groupSearch(@Path(value = "name",encoded = true) String name);
+
+    //我的群列表的接口
+    @GET("group/list/{date}")
+    Call<RspModel<List<GroupCard>>> groups(@Path(value = "date", encoded = true) String date);
+
+    //群成员列表的接口
+    @GET("group/{groupId}/members")
+    Call<RspModel<List<GroupMemberCard>>> groupMembers(@Path("groupId") String groupId);
+
+    //群添加成员的接口
+    @POST("group/{groupId}/member")
+    Call<RspModel<List<GroupMemberCard>>> groupMemberAdd(@Path("groupId") String groupId,
+                                                         @Body GroupMemberAddModel model);
 }

@@ -53,6 +53,7 @@ public class Message extends BaseDbModel<Message> implements  Serializable {
     @ForeignKey(tableClass = Group.class, stubbedRelationship = true)
     private Group group;// 接收者群外键
 
+    //在加载Message信息的时候，User并没有
     @ForeignKey(tableClass = User.class, stubbedRelationship = true)
     private User sender;// 发送者 外键
 

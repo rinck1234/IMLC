@@ -145,6 +145,7 @@ implements PersonalContract.View{
         mDesc.setText(user.getDesc());
         mFollows.setText(String.format(getString(R.string.label_follows),user.getFollows()));
         mFollowing.setText(String.format(getString(R.string.label_following),user.getFollowing()));
+        hideLoading();
     }
 
     @Override
