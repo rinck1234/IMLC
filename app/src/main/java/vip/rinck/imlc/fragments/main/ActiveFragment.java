@@ -3,11 +3,15 @@ package vip.rinck.imlc.fragments.main;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import net.qiujuer.genius.ui.Ui;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -20,6 +24,7 @@ import vip.rinck.imlc.common.widget.EmptyView;
 import vip.rinck.imlc.common.widget.GalleryView;
 import vip.rinck.imlc.common.widget.PortraitView;
 import vip.rinck.imlc.common.widget.recycler.RecyclerAdapter;
+import vip.rinck.imlc.face.Face;
 import vip.rinck.imlc.factory.model.db.Session;
 import vip.rinck.imlc.factory.model.db.User;
 import vip.rinck.imlc.factory.presenter.message.SessionContract;
@@ -126,7 +131,16 @@ implements SessionContract.View{
 
             mPortraitView.setup(Glide.with(ActiveFragment.this),session.getPicture());
             mUsername.setText(session.getTitle());
-            mContent.setText(TextUtils.isEmpty(session.getContent())?"":session.getContent());
+
+            String str = TextUtils.isEmpty(session.getContent())?"":session.getContent();
+
+            Spannable spannable = new SpannableString(str);
+
+            //解析表情
+            Face.decode(mContent,spannable, (int) mContent.getTextSize());
+
+            //把内容设置到布局上
+            mContent.setText(spannable);
             mTime.setText(DateTimeUtil.getSampleDate(session.getModifyAt()));
 
 

@@ -1,6 +1,7 @@
 package vip.rinck.imlc.fragments.message;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.AppBarLayout.OnOffsetChangedListener;
@@ -9,16 +10,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.TextView;
 
 
 import com.bumptech.glide.Glide;
 
+import net.qiujuer.genius.ui.Ui;
 import net.qiujuer.genius.ui.compat.UiCompat;
 import net.qiujuer.genius.ui.widget.Loading;
+import net.qiujuer.widget.airpanel.AirPanel;
+import net.qiujuer.widget.airpanel.Util;
 
 import java.util.Objects;
 
@@ -27,20 +34,21 @@ import butterknife.OnClick;
 
 import vip.rinck.imlc.R;
 import vip.rinck.imlc.activities.MessageActivity;
-import vip.rinck.imlc.common.app.Fragment;
 import vip.rinck.imlc.common.app.PresenterFragment;
 import vip.rinck.imlc.common.widget.PortraitView;
 import vip.rinck.imlc.common.widget.adapter.TextWatcherAdapter;
 import vip.rinck.imlc.common.widget.recycler.RecyclerAdapter;
+import vip.rinck.imlc.face.Face;
 import vip.rinck.imlc.factory.model.db.Message;
 import vip.rinck.imlc.factory.model.db.User;
 import vip.rinck.imlc.factory.persistence.Account;
 import vip.rinck.imlc.factory.presenter.message.ChatContract;
+import vip.rinck.imlc.fragments.panel.PanelFragment;
 
 public abstract class ChatFragment<InitModel>
         extends PresenterFragment<ChatContract.Presenter>
         implements OnOffsetChangedListener,
-        ChatContract.View<InitModel>{
+        ChatContract.View<InitModel>,PanelFragment.PanelCallback{
 
     protected String mReceiverId;
     protected Adapter mAdapter;
@@ -63,6 +71,10 @@ public abstract class ChatFragment<InitModel>
     @BindView(R.id.btn_submit)
     View mSubmit;
 
+    //控制顶部面板与软键盘过渡的Boss控件
+    private AirPanel.Boss mPanelBoss;
+    private PanelFragment mPanelFragment;
+
 
     @Override
     protected void initArgs(Bundle bundle) {
@@ -70,10 +82,41 @@ public abstract class ChatFragment<InitModel>
         mReceiverId = bundle.getString(MessageActivity.KEY_RECEIVER_ID);
     }
 
+    @Override
+    protected final int getContentLayoutId() {
+        return R.layout.fragment_chat_common;
+    }
+
+    //得到顶部资源ID
+    @LayoutRes
+    protected abstract int getHeaderLayoutId();
 
     @Override
     protected void initWidget(View root) {
+
+        //拿到占位布局
+        //替换顶部布局必需在super之前
+        //防止控件绑定异常
+        ViewStub stub = root.findViewById(R.id.view_stub_header);
+        stub.setLayoutResource(getHeaderLayoutId());
+        stub.inflate();
+
+        //这里进行控件绑定
         super.initWidget(root);
+
+        //初始化面板操作
+        mPanelBoss = root.findViewById(R.id.lay_content);
+        mPanelBoss.setup(new AirPanel.PanelListener() {
+            @Override
+            public void requestHideSoftKeyboard() {
+                //请求隐藏软键盘
+                Util.hideKeyboard(mContent);
+            }
+        });
+        mPanelFragment = (PanelFragment) getChildFragmentManager().findFragmentById(R.id.frag_panel);
+        mPanelFragment.setup(this);
+
+
         initToolbar();
         initAppbar();
         initEditContent();
@@ -137,12 +180,16 @@ public abstract class ChatFragment<InitModel>
 
     @OnClick(R.id.btn_face)
     void onFaceClick() {
-        //TODO
+        //仅需请求打开即可
+        mPanelBoss.openPanel();
+        mPanelFragment.showFace();
     }
 
     @OnClick(R.id.btn_record)
     void onRecordClick() {
         //TODO
+        mPanelBoss.openPanel();
+        mPanelFragment.showRecord();
     }
 
     @OnClick(R.id.btn_submit)
@@ -160,6 +207,13 @@ public abstract class ChatFragment<InitModel>
 
     private void onMoreClick() {
         //TODO
+        mPanelBoss.openPanel();
+        mPanelFragment.showGallery();
+    }
+
+    @Override
+    public EditText getInputEditText() {
+        return mContent;
     }
 
     //内容的适配器
@@ -286,8 +340,13 @@ public abstract class ChatFragment<InitModel>
         protected void onBind(Message message) {
             super.onBind(message);
 
+            Spannable spannable = new SpannableString(message.getContent());
+
+            //解析表情
+            Face.decode(mContent,spannable, (int)Ui.dipToPx(getResources(),20));
+
             //把内容设置到布局上
-            mContent.setText(message.getContent());
+            mContent.setText(spannable);
         }
     }
 

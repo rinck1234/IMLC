@@ -39,10 +39,9 @@ public class ChatUserFragment extends ChatFragment<User> implements ChatContract
         // Required empty public constructor
     }
 
-
     @Override
-    protected int getContentLayoutId() {
-        return R.layout.fragment_char_user;
+    protected int getHeaderLayoutId() {
+        return R.layout.lay_chat_header_user;
     }
 
     @Override

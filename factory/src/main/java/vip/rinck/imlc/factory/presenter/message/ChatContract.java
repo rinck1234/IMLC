@@ -1,8 +1,11 @@
 package vip.rinck.imlc.factory.presenter.message;
 
+import java.util.List;
+
 import vip.rinck.imlc.factory.model.db.Group;
 import vip.rinck.imlc.factory.model.db.Message;
 import vip.rinck.imlc.factory.model.db.User;
+import vip.rinck.imlc.factory.model.db.view.MemberUserModel;
 import vip.rinck.imlc.factory.presenter.BaseContract;
 
 public interface ChatContract {
@@ -29,6 +32,10 @@ public interface ChatContract {
     }
     //群聊天的界面
     interface GroupView extends View<Group>{
+        //显示管理员菜单
+        void showAdminOption(boolean isAdmin);
 
+        //初始化成员信息
+        void onInitGroupMembers(List<MemberUserModel> members,long moreCount);
     }
 }
