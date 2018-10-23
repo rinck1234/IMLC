@@ -12,6 +12,8 @@ import vip.rinck.imlc.factory.persistence.Account;
 import vip.rinck.imlc.factory.presenter.BaseSourcePresenter;
 import vip.rinck.imlc.factory.utils.DiffUiDataCallback;
 
+import static vip.rinck.imlc.factory.model.db.Message.TYPE_PIC;
+
 /**
  * 聊天Presenter的基础类
  */
@@ -48,7 +50,18 @@ public class ChatPresenter<View extends ChatContract.View>
 
     @Override
     public void pushImages(String[] paths) {
-        //TODO
+
+        if(paths==null||paths.length==0)
+            return;
+        for (String path : paths) {
+            //构建一个新的消息
+            MsgCreateModel model = new MsgCreateModel.Builder()
+                    .receiver(mReceiverId,mReceiverType)
+                    .content(path,TYPE_PIC)
+                    .build();
+            //进行网络发送
+            MessageHelper.push(model);
+        }
     }
 
     @Override

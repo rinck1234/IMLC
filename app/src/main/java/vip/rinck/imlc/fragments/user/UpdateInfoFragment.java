@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import java.io.File;
 import butterknife.BindView;
 import butterknife.OnClick;
 import vip.rinck.imlc.R;
+import vip.rinck.imlc.activities.AccountActivity;
 import vip.rinck.imlc.activities.MainActivity;
 import vip.rinck.imlc.common.app.Application;
 import vip.rinck.imlc.common.app.Fragment;
@@ -32,6 +34,7 @@ import vip.rinck.imlc.common.widget.PortraitView;
 import vip.rinck.imlc.factory.Factory;
 import vip.rinck.imlc.factory.model.db.User;
 import vip.rinck.imlc.factory.net.UploadHelper;
+import vip.rinck.imlc.factory.persistence.Account;
 import vip.rinck.imlc.factory.presenter.BaseContract;
 import vip.rinck.imlc.factory.presenter.user.UpdateInfoContract;
 import vip.rinck.imlc.factory.presenter.user.UpdateInfoPresenter;
@@ -70,6 +73,17 @@ public class UpdateInfoFragment extends PresenterFragment<UpdateInfoContract.Pre
     @Override
     protected int getContentLayoutId() {
         return R.layout.fragment_update_info;
+    }
+
+    @Override
+    protected void initData() {
+        User user = Account.getUser();
+        if(user==null|| TextUtils.isEmpty(user.getId())){
+            AccountActivity.show(getContext());
+            getActivity().finish();
+        }
+
+        super.initData();
     }
 
     @OnClick(R.id.iv_portrait)

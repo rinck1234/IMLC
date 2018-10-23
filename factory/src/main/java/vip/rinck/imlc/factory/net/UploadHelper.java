@@ -22,7 +22,7 @@ import vip.rinck.imlc.utils.HashUtil;
  */
 public class UploadHelper {
 
-    private static final  String ENDPOINT = "http://oss.imlc.rinck.vip";
+    public static final  String ENDPOINT = "http://oss.imlc.rinck.vip";
     //上传的仓库名
     private static final  String BUCKET_NAME = "imlc";
 

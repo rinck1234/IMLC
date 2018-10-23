@@ -20,14 +20,15 @@
         android:paddingStart="@dimen/len_8"
         android:paddingTop="@dimen/len_8">
 
-        <TextView
-            android:id="@+id/tv_content"
+        <ImageView
+            android:id="@+id/iv_image"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:minHeight="@dimen/len_24"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/textPrimary" />
+            android:layout_height="@dimen/len_76"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/app_name"
+            android:maxWidth="@dimen/len_128"
+            android:minWidth="@dimen/len_48"
+            android:scaleType="fitCenter" />
 
     </FrameLayout>
 
@@ -46,6 +47,7 @@
         android:id="@+id/loading"
         android:layout_width="@dimen/portraitSize"
         android:layout_height="@dimen/portraitSize"
+        android:layout_gravity="end"
         android:padding="1px"
         app:gAutoRun="false"
         app:gBackgroundColor="@null"

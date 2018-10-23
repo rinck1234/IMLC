@@ -11,20 +11,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import net.qiujuer.genius.ui.Ui;
 import vip.rinck.imlc.common.app.Fragment;
 import vip.rinck.imlc.common.tools.UiTool;
+import vip.rinck.imlc.common.widget.GalleryView;
 import vip.rinck.imlc.common.widget.recycler.RecyclerAdapter;
 import vip.rinck.imlc.face.Face;
 import vip.rinck.imlc.R;
+import vip.rinck.imlc.factory.presenter.group.GroupMemberContract;
 
+import java.io.File;
 import java.util.List;
 
 /**
  * 底部面板实现
  */
 public class PanelFragment extends Fragment {
+    private View mFacePanel,mGalleryPanel,mRecordPanel;
     private PanelCallback mCallback;
 
 
@@ -55,7 +60,7 @@ public class PanelFragment extends Fragment {
 
 
     private void initFace(View root) {
-        final View facePanel = root.findViewById(R.id.lay_panel_face);
+        final View facePanel = mFacePanel = root.findViewById(R.id.lay_panel_face);
 
         View backspace = facePanel.findViewById(R.id.iv_backspace);
         backspace.setOnClickListener(new View.OnClickListener() {
@@ -146,25 +151,68 @@ public class PanelFragment extends Fragment {
     }
 
     private void initGallery(View root) {
+        final View galleryPanle = mGalleryPanel = root.findViewById(R.id.lay_gallery_panel);
+        final GalleryView galleryView = galleryPanle.findViewById(R.id.view_gallery);
 
+        final TextView selectedSize = galleryPanle.findViewById(R.id.tv_gallery_select_count);
+
+        galleryView.setup(getLoaderManager(), new GalleryView.SelectedChangeListener() {
+            @Override
+            public void onSelectedCountChanged(int count) {
+                String str = getText(R.string.label_gallery_selected_size).toString();
+                selectedSize.setText(String.format(str,count));
+            }
+        });
+        galleryPanle.findViewById(R.id.btn_send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onGallerySendClick(galleryView,galleryView.getSelectedPath());
+            }
+        });
+
+    }
+
+    //点击时触发 传回一个控件和选中的路径
+    private void onGallerySendClick(GalleryView galleryView,String[] paths){
+        //通知聊天界面
+        //清理状态
+        galleryView.clear();
+
+        //删除逻辑
+        PanelCallback callback = mCallback;
+        if (callback == null)
+            return;
+        callback.onSendGallery(paths);
     }
 
 
     public void showFace() {
+        mGalleryPanel.setVisibility(View.GONE);
+        mFacePanel.setVisibility(View.VISIBLE);
 
     }
 
     public void showRecord() {
+        mGalleryPanel.setVisibility(View.GONE);
+        mFacePanel.setVisibility(View.GONE);
 
     }
 
     public void showGallery() {
+        mGalleryPanel.setVisibility(View.VISIBLE);
+        mFacePanel.setVisibility(View.GONE);
 
     }
 
     // 回调聊天界面的Callback
     public interface PanelCallback {
         EditText getInputEditText();
+
+        //返回需要发送的图片
+        void onSendGallery(String[] paths);
+
+        //返回录音文件和时长
+        void onRecordDone(File file,long time);
     }
 
 }
