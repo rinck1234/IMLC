@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import net.qiujuer.genius.kit.handler.Run;
+import net.qiujuer.genius.kit.handler.runable.Action;
 import net.qiujuer.genius.ui.Ui;
 import net.qiujuer.genius.ui.compat.UiCompat;
 import net.qiujuer.genius.ui.widget.Loading;
@@ -36,7 +38,9 @@ import butterknife.OnClick;
 
 import vip.rinck.imlc.R;
 import vip.rinck.imlc.activities.MessageActivity;
+import vip.rinck.imlc.common.app.Application;
 import vip.rinck.imlc.common.app.PresenterFragment;
+import vip.rinck.imlc.common.tools.AudioPlayHelper;
 import vip.rinck.imlc.common.widget.PortraitView;
 import vip.rinck.imlc.common.widget.adapter.TextWatcherAdapter;
 import vip.rinck.imlc.common.widget.recycler.RecyclerAdapter;
@@ -45,6 +49,7 @@ import vip.rinck.imlc.factory.model.db.Message;
 import vip.rinck.imlc.factory.model.db.User;
 import vip.rinck.imlc.factory.persistence.Account;
 import vip.rinck.imlc.factory.presenter.message.ChatContract;
+import vip.rinck.imlc.factory.utils.FileCache;
 import vip.rinck.imlc.fragments.panel.PanelFragment;
 
 public abstract class ChatFragment<InitModel>
@@ -77,6 +82,10 @@ public abstract class ChatFragment<InitModel>
     private AirPanel.Boss mPanelBoss;
     private PanelFragment mPanelFragment;
 
+    //语音的基础
+    private FileCache<AudioHolder> mAudioFileCache;
+    private AudioPlayHelper<AudioHolder> mAudioPlayer;
+
 
     @Override
     protected void initArgs(Bundle bundle) {
@@ -99,7 +108,7 @@ public abstract class ChatFragment<InitModel>
         //拿到占位布局
         //替换顶部布局必需在super之前
         //防止控件绑定异常
-        ViewStub stub = root.findViewById(R.id.view_stub_header);
+        ViewStub stub = (ViewStub)root.findViewById(R.id.view_stub_header);
         stub.setLayoutResource(getHeaderLayoutId());
         stub.inflate();
 
@@ -107,7 +116,7 @@ public abstract class ChatFragment<InitModel>
         super.initWidget(root);
 
         //初始化面板操作
-        mPanelBoss = root.findViewById(R.id.lay_content);
+        mPanelBoss = (AirPanel.Boss)root.findViewById(R.id.lay_content);
         mPanelBoss.setup(new AirPanel.PanelListener() {
             @Override
             public void requestHideSoftKeyboard() {
@@ -127,6 +136,67 @@ public abstract class ChatFragment<InitModel>
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new Adapter();
         mRecyclerView.setAdapter(mAdapter);
+        //添加适配器监听器
+        mAdapter.setListener(new RecyclerAdapter.AdapterListenerImpl<Message>() {
+            @Override
+            public void onItemClick(RecyclerAdapter.ViewHolder holder, Message message) {
+                if(message.getType()==Message.TYPE_AUDIO&&holder instanceof ChatFragment.AudioHolder){
+                    //TODO 权限的判断
+                    mAudioFileCache.download((ChatFragment.AudioHolder) holder,message.getContent());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //进入界面时初始化
+
+        mAudioPlayer = new AudioPlayHelper<>(new AudioPlayHelper.RecordPlayListener<AudioHolder>() {
+            @Override
+            public void onPlayStart(AudioHolder audioHolder) {
+                audioHolder.onPlayStart();
+            }
+
+            @Override
+            public void onPlayStop(AudioHolder audioHolder) {
+                //直接停止
+                audioHolder.onPlayStop();
+            }
+
+            @Override
+            public void onPlayError(AudioHolder audioHolder) {
+                //提示失败
+                Application.showToast(R.string.toast_audio_play_error);
+            }
+        });
+
+        //下载工具类
+        mAudioFileCache = new FileCache<>("audio/cache", "mp3", new FileCache.CacheListener<AudioHolder>() {
+            @Override
+            public void onDownloadSucceed(final AudioHolder holder, final File file) {
+                Run.onUiAsync(new Action() {
+                    @Override
+                    public void call() {
+                        //主线程播放
+                        mAudioPlayer.trigger(holder,file.getAbsolutePath());
+                    }
+                });
+            }
+
+            @Override
+            public void onDownloadFailed(AudioHolder holder) {
+                Application.showToast(R.string.toast_download_error);
+            }
+
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mAudioPlayer.destroy();
     }
 
     @Override
@@ -226,7 +296,8 @@ public abstract class ChatFragment<InitModel>
 
     @Override
     public void onRecordDone(File file, long time) {
-        //TODO 语音回调
+        // 语音回调
+        mPresenter.pushAudio(file.getAbsolutePath(),time);
     }
 
     //内容的适配器
@@ -368,6 +439,8 @@ public abstract class ChatFragment<InitModel>
 
         @BindView(R.id.tv_content)
         TextView mContent;
+        @BindView(R.id.iv_audio_track)
+        ImageView mAudioTrack;
 
         public AudioHolder(View itemView) {
             super(itemView);
@@ -376,8 +449,33 @@ public abstract class ChatFragment<InitModel>
         @Override
         protected void onBind(Message message) {
             super.onBind(message);
+            //long类型
+            String attach = TextUtils.isEmpty(message.getAttach())?"0":
+                    message.getAttach();
+            mContent.setText(formatTime(attach));
+        }
+        //当播放开始
+        void onPlayStart(){
+            //显示
+            mAudioTrack.setVisibility(View.VISIBLE);
+        }
+        //当播放停止
+        void onPlayStop(){
+            //占位并隐藏
+            mAudioTrack.setVisibility(View.INVISIBLE);
+        }
 
-            //TODO
+        private String formatTime(String attach) {
+            float time;
+            try {
+                time = Float.parseFloat(attach) / 1000f;
+            }catch (Exception e){
+                time = 0;
+            }
+            //取整一位小数
+            String shortTime = String.valueOf(Math.round(time*10)/10f);
+            shortTime = shortTime.replaceAll("[.]0+?$|0+?$","");
+            return String.format("%s″",shortTime);
         }
     }
 

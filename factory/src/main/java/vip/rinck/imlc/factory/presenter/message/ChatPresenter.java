@@ -1,6 +1,7 @@
 package vip.rinck.imlc.factory.presenter.message;
 
 import android.support.v7.util.DiffUtil;
+import android.text.TextUtils;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import vip.rinck.imlc.factory.persistence.Account;
 import vip.rinck.imlc.factory.presenter.BaseSourcePresenter;
 import vip.rinck.imlc.factory.utils.DiffUiDataCallback;
 
+import static vip.rinck.imlc.factory.model.db.Message.TYPE_AUDIO;
 import static vip.rinck.imlc.factory.model.db.Message.TYPE_PIC;
 
 /**
@@ -44,8 +46,18 @@ public class ChatPresenter<View extends ChatContract.View>
     }
 
     @Override
-    public void pushAudio(String path) {
-        //TODO
+    public void pushAudio(String path,long time) {
+        if(TextUtils.isEmpty(path))
+            return;
+        MsgCreateModel model = new MsgCreateModel.Builder()
+                .receiver(mReceiverId,mReceiverType)
+                .content(path,TYPE_AUDIO)
+                .attach(String.valueOf(time))
+                .build();
+        //进行网络发送
+        MessageHelper.push(model);
+        //发送语音
+
     }
 
     @Override

@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/len_4"
-    android:paddingStart="@dimen/len_16"
     android:paddingEnd="@dimen/len_56"
+    android:paddingStart="@dimen/len_16"
     android:paddingTop="@dimen/len_4">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginStart="@dimen/len_20"
-        android:background="@drawable/cell_char_bg"
+        android:background="@drawable/cell_chat_bg"
         android:minHeight="@dimen/portraitSize"
         android:paddingBottom="@dimen/len_8"
-        android:paddingStart="@dimen/len_28"
         android:paddingEnd="@dimen/len_8"
+        android:paddingStart="@dimen/len_28"
         android:paddingTop="@dimen/len_8">
+
+        <ImageView
+            android:layout_width="@dimen/len_16"
+            android:layout_height="@dimen/len_16"
+            android:layout_gravity="center_vertical|end"
+            android:contentDescription="@string/app_name"
+            android:padding="@dimen/len_2"
+            android:src="@drawable/ic_audio_wave"
+            android:tint="@color/textPrimary" />
 
         <TextView
             android:id="@+id/tv_content"
@@ -27,12 +37,25 @@
             android:gravity="center_vertical"
             android:minHeight="@dimen/len_24"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/textPrimary" />
+            android:textColor="@color/textPrimary"
+            tools:text="3″" />
 
-    </FrameLayout>
+        <ImageView
+            android:id="@+id/iv_audio_track"
+            android:layout_width="@dimen/len_16"
+            android:layout_height="@dimen/len_16"
+            android:layout_gravity="center_vertical|end"
+            android:contentDescription="@string/app_name"
+            android:padding="@dimen/len_2"
+            android:src="@drawable/ic_audio_track"
+            android:tint="@color/colorAccent"
+            android:visibility="invisible"
+            tools:visibility="visible" />
+
+    </LinearLayout>
 
 
-    <vip.rinck.imlc.common.widget.PortraitView
+    <net.qiujuer.italker.common.widget.PortraitView
         android:id="@+id/iv_portrait"
         android:layout_width="@dimen/portraitSize"
         android:layout_height="@dimen/portraitSize"
@@ -41,7 +64,6 @@
         android:src="@drawable/default_portrait"
         app:civ_border_color="@color/white"
         app:civ_border_width="2dp" />
-
 
 
 </FrameLayout>

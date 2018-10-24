@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginEnd="@dimen/len_20"
-        android:background="@drawable/cell_char_bg"
+        android:background="@drawable/cell_chat_bg"
         android:minHeight="@dimen/portraitSize"
         android:paddingBottom="@dimen/len_8"
         android:paddingEnd="@dimen/len_28"
